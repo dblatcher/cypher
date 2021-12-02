@@ -1,11 +1,13 @@
 const  Cypher =  require ("./src/cypher");
 
 cypher = new Cypher({
-    "e": "+",
+    "T": "+",
     "s": "^",
+},{
+    upperCase: false
 });
 
-const message = "This is my message.";
+const message = "This is the message.";
 
 const encoded = cypher.encode(message);
 const decoded = cypher.decode(encoded);

@@ -1,17 +1,28 @@
 
 class Cypher {
     /**
-     * 
      * @param {{[index:string]:string}} keyMap 
+     * @param {{upperCase:boolean}} config
      */
-    constructor(keyMap) {
+    constructor(keyMap, config = undefined) {
         this.keyMap = keyMap;
+        this.config = config || Object.assign({}, Cypher.defaultConfig)
+    }
+
+    static defaultConfig = {
+        upperCase: true
     }
 
     get reversedKeyMap() {
         const reversed = {};
-        for (const key in this.keyMap) {
-            reversed[this.keyMap[key]] = key;
+        if (this.config.upperCase) {
+            for (const key in this.keyMap) {
+                reversed[this.keyMap[key].toUpperCase()] = key.toUpperCase();
+            }
+        } else {
+            for (const key in this.keyMap) {
+                reversed[this.keyMap[key]] = key;
+            }
         }
         return reversed;
     }
@@ -22,9 +33,17 @@ class Cypher {
      * @return the encoded string
      */
     encode(text) {
+        const { keyMap, config } = this;
+        if (config.upperCase) {
+            text = text.toUpperCase();
+        }
         const letters = text.split('')
         const encodedLetters = letters.map(letter => {
-            return this.keyMap[letter] || letter
+            let matchingValue = keyMap[letter];
+            if (config.upperCase && !matchingValue) {
+                matchingValue = keyMap[letter.toLowerCase()];
+            }
+            return matchingValue || letter
         })
         return encodedLetters.join('')
     }
@@ -35,10 +54,17 @@ class Cypher {
      * @return the decoded string
      */
     decode(text) {
+
+        const { reversedKeyMap, config } = this;
+        if (config.upperCase) {
+            text = text.toUpperCase();
+        }
+
         const encodedLetters = text.split('');
-        const { reversedKeyMap } = this;
+
         const decodedLetters = encodedLetters.map(letter => {
-            return reversedKeyMap[letter] || letter
+            let matchingValue = reversedKeyMap[letter]
+            return matchingValue || letter
         })
         return decodedLetters.join('')
     }
@@ -65,7 +91,7 @@ class Cypher {
         }
 
         if (duplicates.length > 0) {
-            issues.push (`Duplicate values: [${duplicates.join(', ')}]`)
+            issues.push(`Duplicate values: [${duplicates.join(', ')}]`)
         }
 
         return issues;
