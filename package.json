@@ -20,6 +20,11 @@
   },
   "homepage": "https://github.com/dblatcher/cypher#readme",
   "devDependencies": {
-    "jest": "^27.4.3"
+    "jest": "^27.4.3",
+    "@babel/core": "^7.16.0",
+    "@babel/preset-env": "^7.16.4",
+    "babel-jest": "^27.4.2"
+  },
+  "dependencies": {
   }
 }
