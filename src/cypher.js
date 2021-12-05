@@ -1,3 +1,4 @@
+import { alphabet, shuffleArray } from "./utility"
 
 class Cypher {
     /**
@@ -12,6 +13,8 @@ class Cypher {
     static defaultConfig = {
         upperCase: true
     }
+
+    static alphabet = alphabet
 
     get reversedKeyMap() {
         const reversed = {};
@@ -76,7 +79,7 @@ class Cypher {
     /**
      * check if an obect is a suitable keyMap
      * @param {{[index:string]:string}} keyMap 
-     * @return a let of issuses with the keyMap
+     * @return a list of issues with the keyMap
      */
     static checkKeyMap(keyMap) {
         const issues = [];
@@ -95,6 +98,23 @@ class Cypher {
         }
 
         return issues;
+    }
+
+    static makeEmptyAlphaKeyMap() {
+        const keyMap = {};
+        this.alphabet.forEach(letter => keyMap[letter] = undefined)
+        return keyMap
+    }
+
+    static makeRandomAlphaKeyMap() {
+        const keyMap = this.makeEmptyAlphaKeyMap();
+        const letters = shuffleArray([...this.alphabet])
+
+        Object.keys(keyMap).forEach(key => {
+            keyMap[key] = letters.pop();
+        })
+
+        return keyMap;
     }
 }
 
