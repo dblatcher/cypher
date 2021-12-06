@@ -1,6 +1,6 @@
-const  Cypher =  require ("./src/cypher");
+import Cypher from "./cypher"
 
-cypher = new Cypher({
+const cypher = new Cypher({
     "T": "+",
     "s": "^",
 },{

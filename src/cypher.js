@@ -118,5 +118,5 @@ class Cypher {
     }
 }
 
-module.exports = Cypher
+export default Cypher
 
