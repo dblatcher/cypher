@@ -1,4 +1,4 @@
-import {shuffleArray} from "../src/utility";
+import {shuffleArray} from "../src/js/utility";
 
 
 test ("it can shuffle an empty array",() => {

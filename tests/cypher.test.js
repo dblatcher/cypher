@@ -1,5 +1,4 @@
-// const  Cypher =  require ("../src/cypher");
-import Cypher from "../src/cypher"
+import Cypher from "../src/js/cypher"
 
 const cypher = new Cypher({
     "T": "+",

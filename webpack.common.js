@@ -1,12 +1,13 @@
 const path = require('path');
 const fs = require('fs');
 
+const CopyPlugin = require("copy-webpack-plugin");
 // const publicFiles = fs.readdirSync("./public").map(filename => "./public/" + filename)
 
 module.exports = {
     entry: {
-        "index": './src/index.js',
-        // "public-files": publicFiles,
+        "index": { import: './src/js/index.js', filename: "js/[name].js" },
+        // "public-files": {import: publicFiles, filename:"js/[name].js"},
     },
     module: {
         rules: [
@@ -38,11 +39,18 @@ module.exports = {
         extensions: ['.tsx', '.ts', '.js'],
     },
     output: {
-
         filename: '[name].js',
         path: path.resolve(__dirname, 'dist'),
-        assetModuleFilename: 'public/[name][ext][query]',
+        assetModuleFilename: '[name][ext][query]',
         globalObject: 'this',
         clean: true
     },
+
+    plugins: [
+        new CopyPlugin({
+          patterns: [
+            { from: "src/views", to: "" },
+          ],
+        }),
+      ],
 };
