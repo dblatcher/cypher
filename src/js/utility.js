@@ -1,12 +1,20 @@
 const alphabet = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
 
 
-
+/**
+ * Covert to uppercase, if a string
+ * @param {any} input 
+ * @returns The input, in uppercase if a string 
+ */
+function safeToUpperCase(input) {
+    if (typeof input === 'string') {return input.toUpperCase()}
+    return input
+}
 
 /**
  * Randomly rearrange the members of any array
  * @param {array} inputArray an array
- * @retun the input array with its members randomly rearranged
+ * @returns the input array with its members randomly rearranged
  */
 function shuffleArray(inputArray) {
 
@@ -21,5 +29,5 @@ function shuffleArray(inputArray) {
 
 export {
     alphabet,
-    shuffleArray
+    shuffleArray, safeToUpperCase
 }

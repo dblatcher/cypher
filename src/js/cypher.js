@@ -1,8 +1,8 @@
-import { alphabet, shuffleArray } from "./utility"
+import { alphabet, shuffleArray, safeToUpperCase } from "./utility"
 
 class Cypher {
     /**
-     * @param {{[index:string]:string}} keyMap 
+     * @param {{[index:string]:string|undefined}} keyMap 
      * @param {{upperCase:boolean}} config
      */
     constructor(keyMap, config = undefined) {
@@ -18,15 +18,16 @@ class Cypher {
 
     get reversedKeyMap() {
         const reversed = {};
+        let convertCharacter = character=>character;
         if (this.config.upperCase) {
-            for (const key in this.keyMap) {
-                reversed[this.keyMap[key].toUpperCase()] = key.toUpperCase();
-            }
-        } else {
-            for (const key in this.keyMap) {
-                reversed[this.keyMap[key]] = key;
-            }
+            convertCharacter = character => safeToUpperCase(character)
+        } 
+
+        for (const key in this.keyMap) {
+            const value = convertCharacter(this.keyMap[key]);
+            reversed[value] = convertCharacter(key);
         }
+
         return reversed;
     }
 
@@ -40,15 +41,16 @@ class Cypher {
         if (config.upperCase) {
             text = text.toUpperCase();
         }
-        const letters = text.split('')
-        const encodedLetters = letters.map(letter => {
-            let matchingValue = keyMap[letter];
+        const characters = text.split('')
+        const encodedCharacters = characters.map(character => {
+            let matchingValue = keyMap[character];
             if (config.upperCase && !matchingValue) {
-                matchingValue = keyMap[letter.toLowerCase()];
+                matchingValue = keyMap[character.toLowerCase()];
             }
-            return matchingValue || letter
+            if (matchingValue) { return matchingValue }
+            return character
         })
-        return encodedLetters.join('')
+        return encodedCharacters.join('')
     }
 
     /**
@@ -63,13 +65,14 @@ class Cypher {
             text = text.toUpperCase();
         }
 
-        const encodedLetters = text.split('');
+        const encodedCharacters = text.split('');
 
-        const decodedLetters = encodedLetters.map(letter => {
-            let matchingValue = reversedKeyMap[letter]
-            return matchingValue || letter
+        const decodedCharacters = encodedCharacters.map(character => {
+            let matchingValue = reversedKeyMap[character]
+            if (matchingValue) { return matchingValue }
+            return character
         })
-        return decodedLetters.join('')
+        return decodedCharacters.join('')
     }
 
     check() {

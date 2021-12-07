@@ -46,3 +46,8 @@ test('a random cypher can encode a message with punctuation and decode back to u
     expect(decode).toBe(message.toUpperCase());
 
 })
+
+test('an empty cypher can be used to decode without breaking, but will not change the letters.', () => {
+    const emptyCypher = new Cypher(Cypher.makeEmptyAlphaKeyMap());
+    expect(emptyCypher.decode(message)).toBe(message.toUpperCase());
+})
