@@ -60,7 +60,7 @@ class Cypher {
      */
     decode(text) {
 
-        const { reversedKeyMap, config } = this;
+        const { reversedKeyMap, config, keyMap } = this;
         if (config.upperCase) {
             text = text.toUpperCase();
         }
@@ -68,9 +68,12 @@ class Cypher {
         const encodedCharacters = text.split('');
 
         const decodedCharacters = encodedCharacters.map(character => {
+            if (Object.keys(keyMap).indexOf(character) == -1) {
+                return character
+            }
             let matchingValue = reversedKeyMap[character]
             if (matchingValue) { return matchingValue }
-            return character
+            return "?"
         })
         return decodedCharacters.join('')
     }

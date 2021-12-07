@@ -1,6 +1,7 @@
 import Cypher from "../src/js/cypher"
 
 const message = "This is the message.";
+const messageUndecoded = "???? ?? ??? ???????.";
 
 test('It can replace upper and lower case letters.', () => {
     const testPartialCypher = new Cypher({
@@ -47,7 +48,7 @@ test('a random cypher can encode a message with punctuation and decode back to u
 
 })
 
-test('an empty cypher can be used to decode without breaking, but will not change the letters.', () => {
+test('an empty cypher will change all the letters to question marks.', () => {
     const emptyCypher = new Cypher(Cypher.makeEmptyAlphaKeyMap());
-    expect(emptyCypher.decode(message)).toBe(message.toUpperCase());
+    expect(emptyCypher.decode(message)).toBe(messageUndecoded);
 })
