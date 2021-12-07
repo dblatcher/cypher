@@ -1,17 +1,12 @@
 import Cypher from "./cypher"
+import Puzzle from "./Puzzle";
 
-const cypher = new Cypher({
-    "T": "+",
-    "s": "^",
-},{
-    upperCase: false
+
+const puzzle = new Puzzle({
+    message: "This is my puzzle",
+    cypher: new Cypher( Cypher.makeRandomAlphaKeyMap()),
+    containerSelector: "[data-role=game-container]",
 });
 
-const message = "This is the message.";
+puzzle.render();
 
-const encoded = cypher.encode(message);
-const decoded = cypher.decode(encoded);
-
-console.log({ message, encoded, decoded })
-
-console.log('errors', cypher.check());
