@@ -1,8 +1,8 @@
 import Cypher from "./cypher";
+import { safeToUpperCase } from "./utility";
 
 class Puzzle {
     /**
-     * 
      * @param {{
      *  message: string
      *  cypher: Cypher
@@ -12,50 +12,104 @@ class Puzzle {
     constructor(config) {
         this.cypher = config.cypher;
         this.message = config.message
-        this.answer = new Cypher(Cypher.makeEmptyAlphaKeyMap());
         this.container = document.querySelector(config.containerSelector);
+        this.answer = new Cypher(Cypher.makeEmptyAlphaKeyMap());
     }
 
     get encodedMessage() {
         return this.cypher.encode(this.message)
     }
 
+    get lettersUsedInEncodedMessage() {
+        const { encodedMessage } = this;
+        const characters = encodedMessage.split('');
+        const uniqueCharacters = []
+        characters
+            .filter(character => Cypher.alphabet.indexOf(character) !== -1)
+            .forEach(character => {
+                if (uniqueCharacters.indexOf(character) === -1) { uniqueCharacters.push(character) }
+            })
+
+        return uniqueCharacters
+    }
+
     render() {
-        const textSection=this.container.querySelector("[game-role=text]");
 
-        const {encodedMessage} = this
+        this.renderTextSection();
+        this.renderAnswerSection();
+    }
 
-        while (textSection.childElementCount > 0){
+    renderTextSection() {
+        const { encodedMessage, answer, container } = this
+        const textSection = container.querySelector("[game-role=text]");
+
+
+        while (textSection.childElementCount > 0) {
             textSection.removeChild(textSection.children[0]);
         }
 
         const messageNode = document.createElement("p");
-        messageNode.innerText = "MESSAGE:  " + this.encodedMessage
+        messageNode.innerText = "MESSAGE:  " + encodedMessage
         textSection.appendChild(messageNode);
 
         const answerNode = document.createElement("p");
-        answerNode.innerText = "ANSWER :  " + this.answer.decode(this.encodedMessage);
+        answerNode.innerText = "ANSWER :  " + answer.decode(encodedMessage);
         textSection.appendChild(answerNode);
+    }
 
-        const keyNode = document.createElement('ul');
-        Object.keys(this.answer.keyMap).forEach(letter=> {
-            let letterNode = document.createElement('li');
-            letterNode.innerText = `${letter} = ${this.answer.keyMap[letter] || '?'}`
-            keyNode.appendChild(letterNode);
+    renderAnswerSection() {
+        const { lettersUsedInEncodedMessage, answer, container } = this
+        const answerSection = container.querySelector("[game-role=answer]");
+        const keyControlTemplate = container.querySelector("template#key-control");
+
+        while (answerSection.childElementCount > 0) {
+            answerSection.removeChild(answerSection.children[0]);
+        }
+
+
+        lettersUsedInEncodedMessage.forEach(letter => {
+            const controlNode = keyControlTemplate.content.cloneNode(true);
+
+            controlNode.querySelector("[data-populate=encodedCharacter]").innerText = letter
+
+            controlNode.querySelector("input").value = answer.reversedKeyMap[letter] || ''
+            controlNode.querySelector("input").setAttribute("game-encoded", letter)
+            controlNode.querySelector("input").addEventListener("input", this.keyChangehandler.bind(this))
+            controlNode.querySelector("input").addEventListener("change", this.keyChangehandler.bind(this))
+
+            answerSection.appendChild(controlNode)
         })
-        textSection.appendChild(keyNode)
 
     }
 
-    setLetter(value, keyForTheValue) {
+    setLetter(codedLetter, userGuess) {
 
-        const {keyMap} = this.answer;
+        const { keyMap } = this.answer;
 
         for (let key in keyMap) {
-            if (keyMap[key] === value) {keyMap[key] = undefined}
+            if (keyMap[key] === codedLetter) { keyMap[key] = undefined }
         }
 
-        keyMap[keyForTheValue] = value
+        if (!userGuess) {
+            return
+        }
+
+        keyMap[userGuess] = codedLetter
+    }
+
+    keyChangehandler(event) {
+        const { target } = event
+        const codedLetter = target.getAttribute("game-encoded");
+
+        let userGuess = safeToUpperCase(target.value) || undefined
+
+        if (userGuess && !Cypher.alphabet.includes(userGuess)) {
+            target.value = "";
+            userGuess = undefined
+        }
+
+        this.setLetter(codedLetter, userGuess)
+        this.renderTextSection()
     }
 }
 
