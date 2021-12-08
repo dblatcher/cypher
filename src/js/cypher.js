@@ -36,7 +36,7 @@ class Cypher {
      * @param {string} text the message to encode
      * @return the encoded string
      */
-    encode(text) {
+    encode(text, useQuestionMarkIfUndefined = false) {
         const { keyMap, config } = this;
         if (config.upperCase) {
             text = text.toUpperCase();
@@ -48,6 +48,11 @@ class Cypher {
                 matchingValue = keyMap[character.toLowerCase()];
             }
             if (matchingValue) { return matchingValue }
+
+            if (useQuestionMarkIfUndefined && Object.keys(keyMap).includes(character)) {
+                return "?"
+            }
+
             return character
         })
         return encodedCharacters.join('')

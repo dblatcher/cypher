@@ -13,7 +13,9 @@ class Puzzle {
         this.cypher = config.cypher;
         this.message = config.message
         this.container = document.querySelector(config.containerSelector);
-        this.answer = new Cypher(Cypher.makeEmptyAlphaKeyMap());
+        this.answerKey = Cypher.makeEmptyAlphaKeyMap() // source of future bug? - cyper won't always be alpha?
+        this.selectAndClear = this.selectAndClear.bind(this);
+        this.keyChangehandler = this.keyChangehandler.bind(this);
     }
 
     get encodedMessage() {
@@ -34,31 +36,35 @@ class Puzzle {
     }
 
     render() {
-
         this.renderTextSection();
         this.renderAnswerSection();
     }
 
-    renderTextSection() {
-        const { encodedMessage, answer, container } = this
-        const textSection = container.querySelector("[game-role=text]");
+    selectAndClear(query) {
 
-
-        while (textSection.childElementCount > 0) {
-            textSection.removeChild(textSection.children[0]);
+        const element = this.container.querySelector(query);
+        if (!element) { return null }
+        while (element.childElementCount > 0) {
+            element.removeChild(element.children[0]);
         }
+        return element;
+    }
 
-        const messageNode = document.createElement("p");
-        messageNode.innerText = "MESSAGE:  " + encodedMessage
-        textSection.appendChild(messageNode);
+    renderTextSection() {
+        const { encodedMessage, container, selectAndClear } = this
+        const textSection = selectAndClear("[game-role=text]");
+        const textSectionTemplate = container.querySelector("template#text-section");
 
-        const answerNode = document.createElement("p");
-        answerNode.innerText = "ANSWER :  " + answer.decode(encodedMessage);
-        textSection.appendChild(answerNode);
+        const sectionNode = textSectionTemplate.content.cloneNode(true);
+
+        sectionNode.querySelector("[data-populate=encodedMessage]").innerText = encodedMessage
+        sectionNode.querySelector("[data-populate=decodedMessage]").innerText = new Cypher(this.answerKey).encode(encodedMessage, true)
+
+        textSection.appendChild(sectionNode);
     }
 
     renderAnswerSection() {
-        const { lettersUsedInEncodedMessage, answer, container } = this
+        const { lettersUsedInEncodedMessage, answerKey, container, keyChangehandler } = this
         const answerSection = container.querySelector("[game-role=answer]");
         const keyControlTemplate = container.querySelector("template#key-control");
 
@@ -72,43 +78,28 @@ class Puzzle {
 
             controlNode.querySelector("[data-populate=encodedCharacter]").innerText = letter
 
-            controlNode.querySelector("input").value = answer.reversedKeyMap[letter] || ''
+            controlNode.querySelector("input").value = answerKey[letter] || ''
             controlNode.querySelector("input").setAttribute("game-encoded", letter)
-            controlNode.querySelector("input").addEventListener("input", this.keyChangehandler.bind(this))
-            controlNode.querySelector("input").addEventListener("change", this.keyChangehandler.bind(this))
+            controlNode.querySelector("input").addEventListener("input", keyChangehandler)
+            controlNode.querySelector("input").addEventListener("change", keyChangehandler)
 
             answerSection.appendChild(controlNode)
         })
 
     }
 
-    setLetter(codedLetter, userGuess) {
-
-        const { keyMap } = this.answer;
-
-        for (let key in keyMap) {
-            if (keyMap[key] === codedLetter) { keyMap[key] = undefined }
-        }
-
-        if (!userGuess) {
-            return
-        }
-
-        keyMap[userGuess] = codedLetter
-    }
-
     keyChangehandler(event) {
-        const { target } = event
-        const codedLetter = target.getAttribute("game-encoded");
+        const { target: input } = event
+        const codedLetter = input.getAttribute("game-encoded");
 
-        let userGuess = safeToUpperCase(target.value) || undefined
+        let userGuess = safeToUpperCase(input.value) || undefined
 
         if (userGuess && !Cypher.alphabet.includes(userGuess)) {
-            target.value = "";
             userGuess = undefined
+            input.value = "";
         }
 
-        this.setLetter(codedLetter, userGuess)
+        this.answerKey[codedLetter] = userGuess
         this.renderTextSection()
     }
 }
