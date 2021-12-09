@@ -27,7 +27,7 @@ class Puzzle {
     }
 
     get currentDecodedMessage() {
-        return new Cypher(this.answerKey).encode(this.encodedMessage, true)
+        return new Cypher(this.answerKey).encode(this.encodedMessage, true).replaceAll('?','_')
     }
 
     get lettersUsedInEncodedMessage() {
