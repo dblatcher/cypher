@@ -1,25 +1,31 @@
 <main data-role="game-container">
     <h2>game</h2>
 
-    <section game-role="text" style="font-family: monospace;">
+    <section game-role="text" class="message-section">
     </section>
 
-    <section game-role="answer" style="font-family: monospace; background-color:yellow; padding:.25rem;">
+    <section game-role="answer" class="key-section">
     </section>
 
 
     <template id="text-section">
-        <p data-populate="encodedMessage"></p>
-        <p data-populate="decodedMessage"></p>
+
+        <div class="message-section__frame">
+            <article class="message-section__container">
+                <p class="message-section__message" data-populate="encodedMessage"></p>
+                <p class="message-section__message message-section__message--decoded" data-populate="decodedMessage">
+                </p>
+            </article>
+        </div>
         <p data-populate="isSolved"></p>
     </template>
 
     <template id="key-control">
-        <div style="display: inline-flex; margin-bottom:.25rem">
-            <span>
-                <span data-populate="encodedCharacter"></span>=
-            </span>
-            <input type="text" maxlength="1" style="width: 3rem;"/>
+        <div class="key-control">
+            <label class="key-control__label">
+                <span data-populate="encodedCharacter"></span>&nbsp;=
+            </label>
+            <input type="text" maxlength="1" />
         </div>
     </template>
 </main>

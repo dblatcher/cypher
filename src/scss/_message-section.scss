@@ -1,0 +1,28 @@
+.message-section {
+
+    &__frame {
+        border: 3px double red;
+        padding: .25rem;
+    }
+
+    &__container {
+        position: relative;
+        padding: 0;
+    }
+
+    &__message {
+        position: relative;
+        font-family: monospace;
+        font-size: large;
+        line-height: 3.5em;
+        margin: 0;
+        word-wrap: break-word;
+        text-align: justify;
+
+        &--decoded {
+            color: red;
+            position: absolute;
+            top: -1em;
+        }
+    }
+}
