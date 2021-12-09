@@ -13,13 +13,21 @@ class Puzzle {
         this.cypher = config.cypher;
         this.message = config.message
         this.container = document.querySelector(config.containerSelector);
-        this.answerKey = Cypher.makeEmptyAlphaKeyMap() // source of future bug? - cyper won't always be alpha?
+        this.answerKey = Cypher.makeEmptyAlphaKeyMap() // source of future bug? - cypher won't always be alpha?
         this.selectAndClear = this.selectAndClear.bind(this);
         this.keyChangehandler = this.keyChangehandler.bind(this);
     }
 
+    get isSolved() {
+        return this.message.toUpperCase() == this.currentDecodedMessage.toUpperCase();
+    }
+
     get encodedMessage() {
         return this.cypher.encode(this.message)
+    }
+
+    get currentDecodedMessage() {
+        return new Cypher(this.answerKey).encode(this.encodedMessage, true)
     }
 
     get lettersUsedInEncodedMessage() {
@@ -51,14 +59,15 @@ class Puzzle {
     }
 
     renderTextSection() {
-        const { encodedMessage, container, selectAndClear } = this
+        const { encodedMessage, currentDecodedMessage, isSolved, container, selectAndClear } = this
         const textSection = selectAndClear("[game-role=text]");
         const textSectionTemplate = container.querySelector("template#text-section");
 
         const sectionNode = textSectionTemplate.content.cloneNode(true);
 
         sectionNode.querySelector("[data-populate=encodedMessage]").innerText = encodedMessage
-        sectionNode.querySelector("[data-populate=decodedMessage]").innerText = new Cypher(this.answerKey).encode(encodedMessage, true)
+        sectionNode.querySelector("[data-populate=decodedMessage]").innerText = currentDecodedMessage
+        sectionNode.querySelector("[data-populate=isSolved]").innerText = isSolved ? 'solved!' : 'Not solved!'
 
         textSection.appendChild(sectionNode);
     }
