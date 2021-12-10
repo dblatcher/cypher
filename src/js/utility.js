@@ -17,7 +17,6 @@ function safeToUpperCase(input) {
  * @returns the input array with its members randomly rearranged
  */
 function shuffleArray(inputArray) {
-
     const holdingPile = inputArray.splice(0,inputArray.length);
     let index;
     while (holdingPile.length > 0) {
@@ -27,7 +26,17 @@ function shuffleArray(inputArray) {
     return inputArray;
 }
 
+/**
+ * Pick a random member of any array, without changing the array.
+ * @param {array} inputArray 
+ * @returns a random member
+ */
+function pickRandomItemFrom(inputArray) {
+    const index = Math.floor(Math.random() * inputArray.length);
+    return inputArray[index]
+}
+
 export {
     alphabet,
-    shuffleArray, safeToUpperCase
+    shuffleArray, safeToUpperCase, pickRandomItemFrom
 }

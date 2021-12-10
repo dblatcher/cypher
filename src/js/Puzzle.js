@@ -18,6 +18,10 @@ class Puzzle {
         this.keyChangehandler = this.keyChangehandler.bind(this);
     }
 
+    static TEXT_SECTION_SELECTOR = "[game-role=text]"
+    static ANSWER_SECTION_SELECTOR = "[game-role=answer]"
+    static INPUT_LETTER_ATTRIBUTE = "game-encoded"
+
     get isSolved() {
         return this.message.toUpperCase() == this.currentDecodedMessage.toUpperCase();
     }
@@ -27,7 +31,7 @@ class Puzzle {
     }
 
     get currentDecodedMessage() {
-        return new Cypher(this.answerKey).encode(this.encodedMessage, true).replaceAll('?','_')
+        return new Cypher(this.answerKey).encode(this.encodedMessage, true).replaceAll('?', '_')
     }
 
     get letterCountInEncodedMessage() {
@@ -38,7 +42,7 @@ class Puzzle {
             .filter(character => Cypher.alphabet.includes(character))
             .forEach(character => {
                 if (typeof counts[character] === 'number') { counts[character]++ }
-                else {counts[character] = 1}
+                else { counts[character] = 1 }
             })
 
         return counts
@@ -54,8 +58,13 @@ class Puzzle {
         this.renderAnswerSection();
     }
 
-    selectAndClear(query) {
+    destroy() {
+        const { selectAndClear } = this
+        selectAndClear(Puzzle.TEXT_SECTION_SELECTOR);
+        selectAndClear(Puzzle.ANSWER_SECTION_SELECTOR);
+    }
 
+    selectAndClear(query) {
         const element = this.container.querySelector(query);
         if (!element) { return null }
         while (element.childElementCount > 0) {
@@ -64,23 +73,40 @@ class Puzzle {
         return element;
     }
 
+    /**
+     * Set the text content of the element a give [data-populate] value
+     * @param {string} populateValue the data-populate value to find
+     * @param {string} content the content to put in the matching element
+     * @param {HTMLElement} container the element to search within, defaults to the game container
+     */
+    populate(populateValue, content, container = undefined) {
+        if (!container) { container = this.container }
+        const target = container.querySelector(`[data-populate=${populateValue}]`);
+        if (!target) {
+            console.warn(`[data-populate=${populateValue}] NOT FOUND`. container);
+        }
+        target.innerText = content
+    }
+
     renderTextSection() {
-        const { encodedMessage, currentDecodedMessage, isSolved, container, selectAndClear } = this
-        const textSection = selectAndClear("[game-role=text]");
+        const { encodedMessage, currentDecodedMessage, isSolved, container,
+            selectAndClear, populate
+        } = this
+        const textSection = selectAndClear(Puzzle.TEXT_SECTION_SELECTOR);
         const textSectionTemplate = container.querySelector("template#text-section");
 
         const sectionNode = textSectionTemplate.content.cloneNode(true);
 
-        sectionNode.querySelector("[data-populate=encodedMessage]").innerText = encodedMessage
-        sectionNode.querySelector("[data-populate=decodedMessage]").innerText = currentDecodedMessage
-        sectionNode.querySelector("[data-populate=isSolved]").innerText = isSolved ? 'solved!' : 'Not solved!'
+        populate('encodedMessage', encodedMessage, sectionNode);
+        populate('decodedMessage', currentDecodedMessage, sectionNode);
+        populate('isSolved',  isSolved ? 'solved!' : 'Not solved!', sectionNode);
 
         textSection.appendChild(sectionNode);
     }
 
     renderAnswerSection() {
-        const { lettersUsedInEncodedMessage, letterCountInEncodedMessage, answerKey, container, keyChangehandler } = this
-        const answerSection = container.querySelector("[game-role=answer]");
+        const { lettersUsedInEncodedMessage, letterCountInEncodedMessage, answerKey, container, keyChangehandler,populate } = this
+        const answerSection = container.querySelector(Puzzle.ANSWER_SECTION_SELECTOR);
         const keyControlTemplate = container.querySelector("template#key-control");
 
         while (answerSection.childElementCount > 0) {
@@ -91,27 +117,28 @@ class Puzzle {
         lettersUsedInEncodedMessage.forEach(letter => {
             const controlNode = keyControlTemplate.content.cloneNode(true);
 
-            controlNode.querySelector("[data-populate=encodedCharacter]").innerText = letter
-            controlNode.querySelector("[data-populate=characterCount]").innerText = letterCountInEncodedMessage[letter]
+            populate('encodedCharacter',letter, controlNode)
+            populate('characterCount',letterCountInEncodedMessage[letter], controlNode)
 
-            controlNode.querySelector("input").value = answerKey[letter] || ''
-            controlNode.querySelector("input").setAttribute("game-encoded", letter)
-            controlNode.querySelector("input").addEventListener("input", keyChangehandler)
-            controlNode.querySelector("input").addEventListener("change", keyChangehandler)
+            const input = controlNode.querySelector("input");
+            input.value = answerKey[letter] || ''
+            input.setAttribute(Puzzle.INPUT_LETTER_ATTRIBUTE, letter)
+            input.addEventListener("input", keyChangehandler)
+            input.addEventListener("change", keyChangehandler)
 
             answerSection.appendChild(controlNode)
         })
     }
 
     handleSolutionFound() {
-        const {container} = this;
-        const inputs = [...container.querySelectorAll("input[game-encoded]")];
-        inputs.forEach(input => {input.setAttribute('disabled', 'true')})
+        const { container } = this;
+        const inputs = [...container.querySelectorAll(`input[${Puzzle.INPUT_LETTER_ATTRIBUTE}]`)];
+        inputs.forEach(input => { input.setAttribute('disabled', 'true') })
     }
 
     keyChangehandler(event) {
         const { target: input } = event
-        const codedLetter = input.getAttribute("game-encoded");
+        const codedLetter = input.getAttribute(Puzzle.INPUT_LETTER_ATTRIBUTE);
 
         let userGuess = safeToUpperCase(input.value) || undefined
 
