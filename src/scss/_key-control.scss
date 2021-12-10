@@ -1,6 +1,6 @@
 .key-section {
-    background-color: aquamarine;
-    padding: .5rem;
+    border-top: 3px double gray;
+    padding: .25rem;
     box-sizing: border-box;
 }
 
@@ -13,16 +13,23 @@
     padding: .1rem;
 
     label {
-        flex-basis: 3.5rem;
+        flex-basis: 2.75rem;
+        font-family: monospace;
+        font-size: large;
     }
 
     input {
+        box-sizing: border-box;
         width: 1.5rem;
         text-align: center;
+        color: red;
+        font-family: monospace;
+        text-transform: uppercase;
     }
 
     &__count {
         font-size: small;
         font-weight: 700;
+        font-family: math;
     }
 }
