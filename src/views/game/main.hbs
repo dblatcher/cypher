@@ -23,7 +23,10 @@
     <template id="key-control">
         <div class="key-control">
             <label class="key-control__label">
-                <span data-populate="encodedCharacter"></span>&nbsp;=
+                <span data-populate="encodedCharacter"></span>
+                <span class="key-control__count">
+                    [<span data-populate="characterCount"></span>]
+                </span>
             </label>
             <input type="text" maxlength="1" />
         </div>

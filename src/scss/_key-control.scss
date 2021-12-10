@@ -9,15 +9,20 @@
     align-items: center; 
     box-sizing: border-box;
     margin-bottom:.25rem;
-    width: 4rem;
+    width: 5rem;
     padding: .1rem;
 
     label {
-        flex-basis: 2.5rem;
+        flex-basis: 3.5rem;
     }
 
     input {
         width: 1.5rem;
         text-align: center;
+    }
+
+    &__count {
+        font-size: small;
+        font-weight: 700;
     }
 }

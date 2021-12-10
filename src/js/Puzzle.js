@@ -30,17 +30,23 @@ class Puzzle {
         return new Cypher(this.answerKey).encode(this.encodedMessage, true).replaceAll('?','_')
     }
 
-    get lettersUsedInEncodedMessage() {
+    get letterCountInEncodedMessage() {
         const { encodedMessage } = this;
         const characters = encodedMessage.split('');
-        const uniqueCharacters = []
+        const counts = {}
         characters
-            .filter(character => Cypher.alphabet.indexOf(character) !== -1)
+            .filter(character => Cypher.alphabet.includes(character))
             .forEach(character => {
-                if (uniqueCharacters.indexOf(character) === -1) { uniqueCharacters.push(character) }
+                if (typeof counts[character] === 'number') { counts[character]++ }
+                else {counts[character] = 1}
             })
 
-        return uniqueCharacters
+        return counts
+    }
+
+    get lettersUsedInEncodedMessage() {
+        const { letterCountInEncodedMessage } = this;
+        return Object.keys(letterCountInEncodedMessage)
     }
 
     render() {
@@ -73,7 +79,7 @@ class Puzzle {
     }
 
     renderAnswerSection() {
-        const { lettersUsedInEncodedMessage, answerKey, container, keyChangehandler } = this
+        const { lettersUsedInEncodedMessage, letterCountInEncodedMessage, answerKey, container, keyChangehandler } = this
         const answerSection = container.querySelector("[game-role=answer]");
         const keyControlTemplate = container.querySelector("template#key-control");
 
@@ -86,6 +92,7 @@ class Puzzle {
             const controlNode = keyControlTemplate.content.cloneNode(true);
 
             controlNode.querySelector("[data-populate=encodedCharacter]").innerText = letter
+            controlNode.querySelector("[data-populate=characterCount]").innerText = letterCountInEncodedMessage[letter]
 
             controlNode.querySelector("input").value = answerKey[letter] || ''
             controlNode.querySelector("input").setAttribute("game-encoded", letter)
