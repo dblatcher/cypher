@@ -101,7 +101,12 @@ class Puzzle {
 
             answerSection.appendChild(controlNode)
         })
+    }
 
+    handleSolutionFound() {
+        const {container} = this;
+        const inputs = [...container.querySelectorAll("input[game-encoded]")];
+        inputs.forEach(input => {input.setAttribute('disabled', 'true')})
     }
 
     keyChangehandler(event) {
@@ -117,6 +122,10 @@ class Puzzle {
 
         this.answerKey[codedLetter] = userGuess
         this.renderTextSection()
+
+        if (this.isSolved) {
+            this.handleSolutionFound()
+        }
     }
 }
 
