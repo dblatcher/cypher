@@ -1,23 +1,31 @@
-<main data-role="game-container">
+<main data-role="game-container" class="game-container">
     <h2>game</h2>
 
-    <section game-role="text" class="message-section">
-    </section>
+    <div class="game-container__grid">
 
-    <section game-role="answer" class="key-section">
-    </section>
+        <div game-role="text" class="game-container__cell"></div>
+        <div class="game-container__cell game-container__cell--answer">
+            <section game-role="answer" class="key-section">
+            </section>
+        </div>
+
+    </div>
 
 
     <template id="text-section">
 
-        <div class="message-section__frame">
-            <article class="message-section__container">
-                <p class="message-section__message" data-populate="encodedMessage"></p>
-                <p class="message-section__message message-section__message--decoded" data-populate="decodedMessage">
-                </p>
-            </article>
-        </div>
-        <p data-populate="isSolved"></p>
+        <section class="message-section">
+
+            <div class="message-section__frame">
+                <article class="message-section__container">
+                    <p class="message-section__message" data-populate="encodedMessage"></p>
+                    <p class="message-section__message message-section__message--decoded"
+                        data-populate="decodedMessage">
+                    </p>
+                </article>
+            </div>
+            <p data-populate="isSolved"></p>
+        </section>
     </template>
 
     <template id="key-control">

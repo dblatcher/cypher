@@ -1,26 +1,42 @@
+$controlWidth: 5rem;
+$controlMargin: .05rem;
+$controlBorder: 2px;
+$labelWidth: 3.25rem;
+$sectionMax: 5 * ($controlWidth + $controlMargin*2 );
+$inputWidth: 1.25rem;
+
 .key-section {
-    border-top: 3px double gray;
-    padding: .25rem;
+    padding: 0;
     box-sizing: border-box;
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    top: 1px;
+    position: sticky;
+    max-width: $sectionMax;
 }
 
 .key-control {
     display: inline-flex;
     align-items: center; 
     box-sizing: border-box;
-    margin-bottom:.25rem;
-    width: 5rem;
-    padding: .1rem;
+    padding: .1rem .2rem;
+
+    background-color: whitesmoke;
+    border: $controlBorder outset whitesmoke;
+    margin: $controlMargin;
+    width: $controlWidth;
 
     label {
-        flex-basis: 2.75rem;
+        min-width: $labelWidth;
         font-family: monospace;
         font-size: large;
     }
 
     input {
         box-sizing: border-box;
-        width: 1.5rem;
+        width: $inputWidth;
         text-align: center;
         color: red;
         font-family: monospace;

@@ -1,0 +1,19 @@
+.game-container {
+
+    &__grid {
+        display: flex;
+        flex-direction: column-reverse;
+    }
+
+    &__cell {
+        padding: .5rem;
+        background-color: darkslategray;
+        display: flex;
+        justify-content: center;
+
+        &--answer {
+            position: sticky;
+            top: 0;
+        }
+    }
+}
